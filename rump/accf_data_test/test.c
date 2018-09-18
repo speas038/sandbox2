@@ -19,8 +19,17 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-
+#include <sys/module.h>
+#include <sys/socket.h>
 #include <netinet/tcp.h>
+#include <sys/param.h>
+//#include <sys/kernel.h>
+#include <sys/sysctl.h>
+#include <sys/signalvar.h>
+#include <sys/socketvar.h>
+
+#define ACCEPT_FILTER_MOD
+#include <sys/socketvar.h>
 
 #define MAX_PORT 0xffff
 
@@ -38,6 +47,10 @@ int main(int argc , char *argv[])
     struct sockaddr_in  server_sockaddr, client_sockaddr;
     int                 port = 0;
     char                client_message[MSG_SIZE];
+    
+//    struct accept_filter *myfilter;
+//    accept_filter_init();
+//    myfilter = accept_filt_get( );
 
     if ( argc != 2 )
     {
@@ -96,6 +109,7 @@ int main(int argc , char *argv[])
         printf("Listen failed\n");
         goto ErrorExit;
     }
+
 
     int rc = 0;
     struct accept_filter_arg afa = {0};

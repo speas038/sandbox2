@@ -1,0 +1,81 @@
+
+
+
+
+
+     This filter accepts only IP packets between host 128.3.112.15 and
+     128.3.112.35.
+
+           struct bpf_insn insns[] = {
+		   
+		   Do a halfword load of packet data at offset 12 ( Ethertype of ethernet frame)
+                   into the accumulator
+                   [0] BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 12),
+		   
+                   Compare the value in the accumulator to ETHERTYPE_IP if true [2] else [10]
+                   [1] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, ETHERTYPE_IP, 0, 8),
+		   
+		   Load source IP at offset 26 ( 14 + 12 ) into the accumulator
+                   [2] BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 26),
+
+		   0x8003700f = 128.3.112.15 so if it's equal jump to [4] else [6]
+                   [3] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x8003700f, 0, 2),
+                   
+                   Load dest IP at offset 30 ( 14 + 16 ) into the accumulator
+                   [4] BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 30),
+                   
+                   0x80037023 = 128.3.112.35 so if it's equal jump to [9] else [10]
+                   [5] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x80037023, 3, 4),
+                   
+                   If value in accumulator = 128.3.112.35 [7] else [10]
+                   [6] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x80037023, 0, 3),
+                   
+                   Load dest IP at offset 30 ( 14 + 16 ) into accumulator
+                   [7] BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 30),
+
+                   If accumulator = 128.3.112.15 [9] else [10]
+                   [8] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x8003700f, 0, 1),
+                   
+                   return 0xFFFFFFFF ( accept the whole packet )
+                   [9] BPF_STMT(BPF_RET+BPF_K, (u_int)-1),
+                   
+                   Return 0 ( Ignore packet )
+                   [10] BPF_STMT(BPF_RET+BPF_K, 0),
+           };
+
+so to block ip address:
+
+           struct bpf_insn insns[] = {
+		   
+		   Do a halfword load of packet data at offset 12 ( Ethertype of ethernet frame)
+                   into the accumulator
+                   [0] BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 12),
+		   
+                   Compare the value in the accumulator to ETHERTYPE_IP if true [2] else [5]
+                   [1] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, ETHERTYPE_IP, 0, 8),
+
+                   Load source IP at offset 26 ( 14 + 12 ) into the accumulator
+                   [2] BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 26),
+
+		   0x8003700f = 128.3.112.15 so if it's equal jump to [5] else [4]
+                   [3] BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x8003700f, 1, 0),
+
+                   return 0xFFFFFFFF ( accept the whole packet )
+                   [4] BPF_STMT(BPF_RET+BPF_K, (u_int)-1),
+                   
+                   Return 0 ( Ignore packet )
+                   [5] BPF_STMT(BPF_RET+BPF_K, 0),
+           };
+
+
+
+
+
+
+
+
+
+
+
+
+
