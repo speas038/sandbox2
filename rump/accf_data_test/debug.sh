@@ -2,12 +2,6 @@
 
 IP=10.30.30.134
 
-rm test
-rm test-rumprun
-
-x86_64-rumprun-netbsd-gcc -ggdb3 -o test test.c
-rumprun-bake xen_pv test-rumprun test
-
 
 echo "gdb -tui -ex 'target remote:1234' test-rumprun"
 

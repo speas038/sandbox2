@@ -2,7 +2,7 @@ all: test-rumprun test
 
 
 test-rumprun: test
-	rumprun-bake xen-pv test-rumprun test
+	rumprun-bake -c xenevents.conf xen_events test-rumprun test
 
 
 test: test.c

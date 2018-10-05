@@ -12,21 +12,28 @@
  * @brief   A simple test server to test comms.
  */
 
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
+#define _GNU_SOURCE
+
 #include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <ifaddrs.h>
+#include <netdb.h>
+#include <string.h>
+
+#include <sys/types.h>
 #include <sys/module.h>
 #include <sys/socket.h>
-#include <netinet/tcp.h>
-#include <sys/param.h>
-//#include <sys/kernel.h>
 #include <sys/sysctl.h>
-#include <sys/signalvar.h>
 #include <sys/socketvar.h>
+
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
+#include <arpa/inet.h>
+//#include <sys/kernel.h>
+
+
 
 #define ACCEPT_FILTER_MOD
 #include <sys/socketvar.h>
@@ -37,6 +44,57 @@
 
 int                 server_sockfd = -1;
 int                 client_sockfd = -1;
+
+
+void get_inaddrs( void )
+{
+
+    struct ifaddrs *ifaddr, *ifa;
+    int family, s, n;
+    char host[NI_MAXHOST];
+
+    if (getifaddrs(&ifaddr) == -1) {
+        perror("getifaddrs");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Walk through linked list, maintaining head pointer so we
+       can free list later */
+
+    for (ifa = ifaddr, n = 0; ifa != NULL; ifa = ifa->ifa_next, n++) {
+        if (ifa->ifa_addr == NULL)
+            continue;
+
+        family = ifa->ifa_addr->sa_family;
+
+        /* Display interface name and family (including symbolic
+           form of the latter for the common families) */
+
+        if ( family == AF_INET && !strncmp( ifa->ifa_name, "xenif0", sizeof( "xenif0" )) )
+        {
+            printf("%-8s %s (%d)\n",
+                   ifa->ifa_name,
+                   (family == AF_INET) ? "AF_INET" : 0,
+                   family);
+            /* For an AF_INET* interface address, display the address */
+
+            s = getnameinfo(ifa->ifa_addr,
+                            (family == AF_INET) ? sizeof(struct sockaddr_in) :
+                            sizeof(struct sockaddr_in6),
+                            host, NI_MAXHOST,
+                            NULL, 0, NI_NUMERICHOST);
+            if (s != 0) {
+                printf("getnameinfo() failed: %s\n", gai_strerror(s));
+                exit(EXIT_FAILURE);
+            }
+
+            printf("\t\taddress: <%s>\n", host);
+
+        } 
+    }
+
+    freeifaddrs(ifaddr);
+}
 
 
 int main(int argc , char *argv[])
@@ -51,6 +109,8 @@ int main(int argc , char *argv[])
 //    struct accept_filter *myfilter;
 //    accept_filter_init();
 //    myfilter = accept_filt_get( );
+
+    get_inaddrs();
 
     if ( argc != 2 )
     {
@@ -95,7 +155,7 @@ int main(int argc , char *argv[])
     }
     else
     {
-        printf("Bind succeeeded\n");
+        printf( "Bind succeeeded\n" );
     }
 
 
