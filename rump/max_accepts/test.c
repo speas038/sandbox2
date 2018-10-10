@@ -5,7 +5,8 @@
 #include <unistd.h>
 
 
-#define MAX_ACCEPTS 1000
+#define MAX_ACCEPTS 1
+#define PORT 8080
 
 int main( int argc, const char* argv[] )
 {
@@ -23,6 +24,10 @@ int main( int argc, const char* argv[] )
         perror("Socket Error");
     }
     
+    accept_addr.sin_family = AF_INET;
+    accept_addr.sin_port = htons( PORT );
+    accept_addr.sin_addr.s_addr = INADDR_ANY;
+
     err = bind( accept_fd, ( struct sockaddr* )&accept_addr, sizeof( accept_addr ) );
     if( !err )
     {
@@ -34,6 +39,8 @@ int main( int argc, const char* argv[] )
     {
         perror("Listen Error");
     }
+
+    printf( "Accepting connections on port %d\n", PORT );
 
     for( int i = 0; i < MAX_ACCEPTS; i++ )
     {

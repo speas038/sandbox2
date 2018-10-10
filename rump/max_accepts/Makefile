@@ -10,4 +10,4 @@ test: test.c
 
 
 clean:
-	rm test-rumprun test
+	rm -f test-rumprun test
