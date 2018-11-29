@@ -1,0 +1,18 @@
+to start the rumpctrl client, download the rumpctrl project
+
+$ git clone git@github.com:rumpkernel/rumpctrl.git
+
+build with
+
+$ buildnb.sh
+
+run with
+
+$ . rumpctrl.sh
+
+once at the rumpctrl prompt export the rump server variable
+
+$ export RUMP_SERVER=tcp://10.10.10.10:8888
+
+You should be able to run commands and such the special sauce lies only in
+exporting the rump server environment variable in the run.sh script

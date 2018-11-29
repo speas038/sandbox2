@@ -1,16 +1,16 @@
 CC = x86_64-rumprun-netbsd-gcc 
 CFLAGS = -std=gnu99 -Wall -Wno-missing-braces
-CFLAGS += -ggdb
+CFLAGS+=-ggdb
+
 
 BAKE=rumprun-bake
-BAKE_FLAGS=xen_pv
+BAKE_FLAGS=-c npftest.config xen_npf
 
-APPNAME=
+APPNAME=rump_server
 
-SOURCES=
+SOURCES=rump_server.c
 
 ARCHIVES=
-
 
 all: $(APPNAME).run
 
