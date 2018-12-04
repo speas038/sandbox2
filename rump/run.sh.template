@@ -2,9 +2,21 @@
 
 IP=
 APPNAME=
+DBG_ARGS=
+RUMP_SERVER=
 
+while getopts "ds" opt; do
+    case $opt in
+        d)
+        DBG_ARGS=" -p -D 1234 "
+        ;; 
+        s)
+        RUMPRUN_SYSPROXY=" -e RUMPRUN_SYSPROXY=tcp://0.0.0.0:8888 "
+        ;;
+    esac
+done
 
-rumprun -S xen -di -M 256 -N test-rump\
+rumprun -S xen -d $DBG_ARGS $RUMP_SYSPROXY -M 256 -N test-rump\
 	-I xen0,xenif \
 	-W xen0,inet,static,$IP/24 \
 	./$APPNAME.run
