@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <sched.h>
 #include <fcntl.h>
+#include <npf.h>
 
 //#include <rump/rump.h>
 //#include <rump/rump_syscalls.h>
@@ -21,6 +22,8 @@ int main( )
 
     FILE *conf_file = NULL;
     int rc = 0;
+    int fd = 0;
+    int ver = 0;
     
     conf_file = fopen("/npf.conf", "w+" );
     if( ! conf_file )
@@ -41,7 +44,15 @@ int main( )
     
     printf( "Melania Trump: Hello?\n" );
 
-    while(1)
+    fd = open( "/dev/npf", O_RDONLY );
+
+    if ( ioctl( fd, IOC_NPF_VERSION, &ver ) == -1 )
+        perror( "IOC_NPF_VERSION" );
+
+    printf( "npf_version: %d", ver );
+    fflush( stdout );
+
+//    while(1)
     {
         sleep( 1 );
         sched_yield();
