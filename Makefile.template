@@ -11,3 +11,4 @@ all: $(PROG)
 
 clean:
 	rm -f $(PROG) *.o
+	echo "hello"
