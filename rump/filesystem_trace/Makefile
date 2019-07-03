@@ -5,9 +5,9 @@ CFLAGS += -ggdb
 BAKE=rumprun-bake
 BAKE_FLAGS=xen_pv
 
-APPNAME=
+APPNAME=filesystem_test
 
-SOURCES=
+SOURCES=filesystem_test.c
 
 ARCHIVES=
 

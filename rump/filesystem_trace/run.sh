@@ -1,9 +1,11 @@
 #!/bin/bash
 
-IP=
-APPNAME=
+IP=10.30.30.134
+APPNAME=filesystem_test
 DBG_ARGS=
 RUMP_SERVER=
+
+set -x
 
 while getopts "ds" opt; do
     case $opt in
@@ -16,7 +18,7 @@ while getopts "ds" opt; do
     esac
 done
 
-rumprun -S xen -di $DBG_ARGS $RUMP_SYSPROXY -M 256 -N test-rump\
+rumprun -S xen -di $DBG_ARGS $RUMP_SYSPROXY -M 256 -N $APPNAME-rump\
 	-I xen0,xenif \
 	-W xen0,inet,static,$IP/24 \
 	./$APPNAME.run
