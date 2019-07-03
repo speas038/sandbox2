@@ -29,7 +29,7 @@ int main( int argc, const char* argv[] )
     accept_addr.sin_addr.s_addr = INADDR_ANY;
 
     err = bind( accept_fd, ( struct sockaddr* )&accept_addr, sizeof( accept_addr ) );
-    if( !err )
+    if( err )
     {
         perror("Bind Error");
     }
